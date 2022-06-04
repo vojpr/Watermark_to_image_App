@@ -55,26 +55,26 @@ def save():
     image.save(fp=f'{str(os.path.join(Path.home(), "Downloads"))}/watermark_image_{time.time()}.jpg')
     # Notify user of saving image
     entry.delete(0, END)
-    entry.insert(END, string="Image with watermark saved")
+    entry.insert(END, string="Image with watermark saved to the downloads folder")
 
 
 window = Tk()
 window.title("Watermark App")
-window.config(padx=50, pady=50)
+window.config(background="#808080", padx=50, pady=50)
 
-canvas = Canvas(window, width=600, height=600, background="white")
+canvas = Canvas(window, width=600, height=600, highlightthickness=0, background="#C0C0C0")
 canvas.grid(column=0, row=0, columnspan=5)
 
-entry = Entry(width=52)
+entry = Entry(width=52, highlightthickness=0)
 entry.insert(END, string="Enter your © copyright ar other text to use as a watermark")
 entry.grid(column=1, row=1, columnspan=3, pady=(5, 10))
 
 
-upload_button = Button(text="Upload Image", bg='#77dd77', width=130, command=select_file)
+upload_button = Button(text="Upload Image", bg='#77dd77', borderless=1, width=130, command=select_file)
 upload_button.grid(column=1, row=3)
-watermark_button = Button(text="Add Watermark", bg='#77dd77', width=130, command=add_text)
+watermark_button = Button(text="Add Watermark", bg='#77dd77', borderless=1, width=130, command=add_text)
 watermark_button.grid(column=2, row=3)
-download_button = Button(text="Save Image", bg='#77dd77', width=130, command=save)
+download_button = Button(text="Save Image", bg='#77dd77', borderless=1, width=130, command=save)
 download_button.grid(column=3, row=3)
 
 window.mainloop()
