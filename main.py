@@ -114,11 +114,11 @@ entry.insert(END, string="Enter your © copyright ar other text to use as a wate
 entry.grid(column=1, row=1, columnspan=3, pady=(5, 10))
 
 
-upload_button = Button(text="Upload Image", bg='#77dd77', borderless=1, width=130, command=select_file)
+upload_button = Button(window, text="Upload Image", bg='#77dd77', borderless=1, width=130, command=select_file)
 upload_button.grid(column=1, row=3)
-watermark_button = Button(text="Add Watermark", bg='#77dd77', borderless=1, width=130, command=add_text)
+watermark_button = Button(window, text="Add Watermark", bg='#77dd77', borderless=1, width=130, command=add_text)
 watermark_button.grid(column=2, row=3)
-download_button = Button(text="Save Image", bg='#77dd77', borderless=1, width=130, command=save)
+download_button = Button(window, text="Save Image", bg='#77dd77', borderless=1, width=130, command=save)
 download_button.grid(column=3, row=3)
 
 window.mainloop()
