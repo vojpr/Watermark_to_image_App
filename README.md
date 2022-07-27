@@ -1,4 +1,4 @@
-# Watermark_to_image_App
+# Watermark to image App
 App lets user upload image (jpg) from file browser and write custom watermark over it using Pillow.<br>
 GUI built with Tkinter and CustomTkinter.
 
