@@ -65,27 +65,30 @@ def select_color():
 def select_file():
     global resized_image, new_width, new_height, filename
     # Load image
-    filetypes = (("image files", ('.jpg', '.jpeg')), ("all files", "*.*"))
+    filetypes = (("image files", ('.jpg', '.jpeg', '.png')), ("all files", "*.*"))
     filename = filedialog.askopenfilename(title="Open a file", initialdir="/", filetypes=filetypes)
-    img = Image.open(filename)
-    # Resize image to fit 500x500 canvas (not saving the resized version)
-    if img.height == img.width:
-        new_height = 500
-        new_width = 500
-    elif img.height > img.width:
-        new_height = 500
-        new_width = img.width / (img.height / 500)
-    elif img.height < img.width:
-        new_height = img.height / (img.width / 500)
-        new_width = 500
-    resized_image = img.resize((int(new_width), int(new_height)), Image.Resampling.LANCZOS)
-    resized_image = ImageTk.PhotoImage(resized_image)
-    # Show image on canvas
-    canvas.config(width=int(new_width), height=int(new_height))
-    canvas.create_image(new_width / 2, new_height / 2, image=resized_image)
-    # Set text back after saving previous image
-    entry.delete(0, END)
-    entry.insert(END, string="Enter your © copyright ar other text to use as a watermark")
+    try:
+        img = Image.open(filename)
+        # Resize image to fit 500x500 canvas (not saving the resized version)
+        if img.height == img.width:
+            new_height = 500
+            new_width = 500
+        elif img.height > img.width:
+            new_height = 500
+            new_width = img.width / (img.height / 500)
+        elif img.height < img.width:
+            new_height = img.height / (img.width / 500)
+            new_width = 500
+        resized_image = img.resize((int(new_width), int(new_height)), Image.Resampling.LANCZOS)
+        resized_image = ImageTk.PhotoImage(resized_image)
+        # Show image on canvas
+        canvas.config(width=int(new_width), height=int(new_height))
+        canvas.create_image(new_width / 2, new_height / 2, image=resized_image)
+        # Set text back after saving previous image
+        entry.delete(0, END)
+        entry.insert(END, string="Enter your © copyright ar other text to use as a watermark")
+    except AttributeError:
+        return
 
 
 def add_text():
@@ -93,24 +96,41 @@ def add_text():
     # Get text, set font, open image
     text = entry.get()
     font = ImageFont.truetype("Arial Bold.ttf", int(slider.get()))
-    image = Image.open(filename)
-    # Add watermark text
-    edit_image = ImageDraw.Draw(image)
-    edit_image.text((0, image.height / 2), text, fill=select_color(), font=font)
-    # Resize image to fit 500x500 canvas (not saving the resized version)
-    watermark_image = image.resize((int(new_width), int(new_height)), Image.Resampling.LANCZOS)
-    watermark_image = ImageTk.PhotoImage(watermark_image)
-    # Show watermark image on canvas
-    canvas.create_image(new_width / 2, new_height / 2, image=watermark_image)
+    try:
+        image = Image.open(filename)
+        # Add watermark text
+        edit_image = ImageDraw.Draw(image)
+        edit_image.text((0, image.height / 2), text, fill=select_color(), font=font)
+        # Resize image to fit 500x500 canvas (not saving the resized version)
+        watermark_image = image.resize((int(new_width), int(new_height)), Image.Resampling.LANCZOS)
+        watermark_image = ImageTk.PhotoImage(watermark_image)
+        # Show watermark image on canvas
+        canvas.create_image(new_width / 2, new_height / 2, image=watermark_image)
+    except NameError:
+        # Notify user of not uploading the image
+        entry.delete(0, END)
+        entry.insert(END, string="No image selected. Upload your image first.")
+    except AttributeError:
+        # Notify user of missing image
+        entry.delete(0, END)
+        entry.insert(END, string="Reupload your image please.")
 
 
 def save():
     # Save the image with watermark in original size
-    # Timestamp for creating unique name
-    image.save(fp=f'{get_download_folder()}/watermark_image_{time.time()}.jpg')
-    # Notify user of saving image
-    entry.delete(0, END)
-    entry.insert(END, string="Image with watermark saved to the downloads folder")
+    try:
+        # Timestamp for creating unique name
+        try:
+            image.save(fp=f'{get_download_folder()}/watermark_image_{time.time()}.jpg')
+        except OSError:
+            image.save(fp=f'{get_download_folder()}/watermark_image_{time.time()}.png')
+        # Notify user of saving image
+        entry.delete(0, END)
+        entry.insert(END, string="Image with watermark saved to the downloads folder")
+    except NameError:
+        # Notify user of not uploading the image
+        entry.delete(0, END)
+        entry.insert(END, string="No image selected. Upload your image first.")
 
 
 customtkinter.set_appearance_mode("dark")
