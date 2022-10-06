@@ -4,6 +4,19 @@ import customtkinter
 from PIL import Image, ImageTk, ImageFont, ImageDraw
 import os
 import time
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
+import tempfile
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Set sender email info here
+SENDER_EMAIL = os.getenv('SENDER_EMAIL')
+PASSWORD = os.getenv('PASSWORD')
+SMTP_SERVER = "smtp.gmail.com"
 
 # Returns Downloads folder depending on operational system
 if os.name == 'nt':
@@ -120,15 +133,62 @@ def save():
     # Save the image with watermark in original size
     try:
         # Timestamp for creating unique name
-        try:
-            image.save(fp=f'{get_download_folder()}/watermark_image_{time.time()}.jpg')
-        except OSError:
-            image.save(fp=f'{get_download_folder()}/watermark_image_{time.time()}.png')
+        image.save(fp=f'{get_download_folder()}/watermark_image_{time.time()}.{image.format}')
         # Notify user of saving image
         entry.delete(0, END)
         entry.insert(END, string="Image with watermark saved to the downloads folder")
     except NameError:
         # Notify user of not uploading the image
+        entry.delete(0, END)
+        entry.insert(END, string="No image selected. Upload your image first.")
+    except ValueError:
+        # Notify user of not uploading the image
+        entry.delete(0, END)
+        entry.insert(END, string="Reupload your image please.")
+
+
+def send_to_email():
+    # Create a multipart message and set headers
+    msg = MIMEMultipart()
+    msg["Subject"] = "New Image from Watermark App!"
+    msg["From"] = SENDER_EMAIL
+    msg["To"] = email_entry.get()
+    # Set message body text
+    msg_text = MIMEText("Hello,\n\nthe image sent from Watermark App can be found in the attachment of this email.")
+    msg.attach(msg_text)
+    try:
+        # Set image name and save it to temporary directory
+        image_name = f"Watermark_image.{image.format}"
+        temp_dir = tempfile.mkdtemp()
+        file_path = os.path.join(temp_dir, image_name)
+        image.seek(0)
+        try:
+            image.save(file_path)
+            image.close()
+        except ValueError:
+            entry.delete(0, END)
+            entry.insert(END, string="Reupload your image please.")
+            return
+        # Attach selected image to the message
+        with open(file_path, "rb") as selected_image:
+            img = MIMEImage(selected_image.read())
+            img.add_header('Content-Disposition', 'attachment', filename=image_name)
+            msg.attach(img)
+        # Send the message
+        with smtplib.SMTP(SMTP_SERVER) as connection:
+            connection.ehlo()
+            connection.starttls()
+            connection.login(user=SENDER_EMAIL, password=PASSWORD)
+            try:
+                connection.sendmail(
+                    from_addr=SENDER_EMAIL,
+                    to_addrs=email_entry.get(),
+                    msg=msg.as_string()
+                )
+            except:
+                entry.delete(0, END)
+                entry.insert(END, string="No email address provided.")
+    except NameError:
         entry.delete(0, END)
         entry.insert(END, string="No image selected. Upload your image first.")
 
@@ -138,7 +198,8 @@ customtkinter.set_default_color_theme("green")
 
 window = customtkinter.CTk()
 window.title("Watermark App")
-window.geometry("640x740")
+window.geometry("640x800")
+window.minsize(width=580, height=580)
 window.config(padx=40, pady=40)
 
 # Frame
@@ -153,8 +214,13 @@ canvas.grid(column=0, row=0, columnspan=6)
 
 # Entry
 entry = customtkinter.CTkEntry(master=window.frame, width=480)
+entry.bind("<Button-1>", lambda e: entry.delete(0, END))
 entry.insert(END, string="Type here your © copyright or other text to use as a watermark")
 entry.grid(column=0, row=1, columnspan=6, pady=(15, 0))
+email_entry = customtkinter.CTkEntry(master=window.frame, width=280)
+email_entry.bind("<Button-1>", lambda e: email_entry.delete(0, END))
+email_entry.insert(END, string="Enter your email address here")
+email_entry.grid(column=0, row=5, columnspan=4, pady=(15, 0))
 
 # Radio Buttons
 radio_var = StringVar()
@@ -179,5 +245,11 @@ watermark_button = customtkinter.CTkButton(master=window.frame, text="Add Waterm
 watermark_button.grid(column=2, row=4, columnspan=2, pady=(15, 0))
 download_button = customtkinter.CTkButton(master=window.frame, text="Save Image", width=130, command=save)
 download_button.grid(column=4, row=4, columnspan=2, pady=(15, 0))
+send_to_email_button = customtkinter.CTkButton(master=window.frame, text="Send to Email", width=130, command=send_to_email)
+send_to_email_button.grid(column=4, row=5, columnspan=2, pady=(15, 0))
+
+# Label
+# label = customtkinter.CTkLabel(master=window.frame, width=25, text="-or-")
+# label.place(relx=0.3, rely=0.9, anchor=CENTER)
 
 window.mainloop()
