@@ -198,58 +198,58 @@ customtkinter.set_default_color_theme("green")
 
 window = customtkinter.CTk()
 window.title("Watermark App")
-window.geometry("640x800")
+window.geometry("640x820")
 window.minsize(width=580, height=580)
 window.config(padx=40, pady=40)
 
 # Frame
 window.grid_columnconfigure(0, weight=1)
 window.grid_rowconfigure(0, weight=1)
-window.frame = customtkinter.CTkFrame(master=window, fg_color=None)
-window.frame.grid(row=0, column=0)
+window.frame = customtkinter.CTkFrame(master=window, fg_color=None, height=705, width=540)
+window.frame.pack()
 
 # Canvas
 canvas = Canvas(master=window.frame, width=500, height=500, highlightthickness=0, background="#C0C0C0")
-canvas.grid(column=0, row=0, columnspan=6)
+canvas.place(relx=0.5, rely=0, anchor=N)
 
 # Entry
 entry = customtkinter.CTkEntry(master=window.frame, width=480)
 entry.bind("<Button-1>", lambda e: entry.delete(0, END))
 entry.insert(END, string="Type here your © copyright or other text to use as a watermark")
-entry.grid(column=0, row=1, columnspan=6, pady=(15, 0))
-email_entry = customtkinter.CTkEntry(master=window.frame, width=280)
+entry.place(relx=0.5, rely=0.735, anchor=N)
+email_entry = customtkinter.CTkEntry(master=window.frame, width=208)
 email_entry.bind("<Button-1>", lambda e: email_entry.delete(0, END))
 email_entry.insert(END, string="Enter your email address here")
-email_entry.grid(column=0, row=5, columnspan=4, pady=(15, 0))
+email_entry.place(relx=0.532, rely=0.958, anchor=N)
 
 # Radio Buttons
 radio_var = StringVar()
 radiobutton_white = customtkinter.CTkRadioButton(master=window.frame, text="White text", command=select_color,
                                                  variable=radio_var, value="white")
-radiobutton_white.grid(column=0, row=2, columnspan=3, pady=(15, 0))
+radiobutton_white.place(relx=0.26, rely=0.8, anchor=N)
 radiobutton_white.select()
 radiobutton_black = customtkinter.CTkRadioButton(master=window.frame, text="Black text ", command=select_color,
                                                  variable=radio_var, value="black")
-radiobutton_black.grid(column=0, row=3, columnspan=3, pady=(3, 0))
+radiobutton_black.place(relx=0.262, rely=0.84, anchor=N)
 
 # Slider
 slider_label = customtkinter.CTkLabel(master=window.frame, text="Font size slider")
-slider_label.grid(column=3, row=2, columnspan=3, pady=(15, 0))
+slider_label.place(relx=0.71, rely=0.795, anchor=N)
 slider = customtkinter.CTkSlider(master=window.frame, from_=1, to=300)
-slider.grid(column=3, row=3, columnspan=3)
+slider.place(relx=0.71, rely=0.843, anchor=N)
 
 # Buttons
-upload_button = customtkinter.CTkButton(master=window.frame, text="Upload Image", width=130, command=select_file)
-upload_button.grid(column=0, row=4, columnspan=2, pady=(15, 0))
-watermark_button = customtkinter.CTkButton(master=window.frame, text="Add Watermark", width=130, command=add_text)
-watermark_button.grid(column=2, row=4, columnspan=2, pady=(15, 0))
-download_button = customtkinter.CTkButton(master=window.frame, text="Save Image", width=130, command=save)
-download_button.grid(column=4, row=4, columnspan=2, pady=(15, 0))
-send_to_email_button = customtkinter.CTkButton(master=window.frame, text="Send to Email", width=130, command=send_to_email)
-send_to_email_button.grid(column=4, row=5, columnspan=2, pady=(15, 0))
+upload_button = customtkinter.CTkButton(master=window.frame, text="Upload Image", width=150, command=select_file)
+upload_button.place(relx=0.3, rely=0.891, anchor=N)
+watermark_button = customtkinter.CTkButton(master=window.frame, text="Add Watermark", width=150, command=add_text)
+watermark_button.place(relx=0.7, rely=0.891, anchor=N)
+download_button = customtkinter.CTkButton(master=window.frame, text="Save Image", width=110, command=save)
+download_button.place(relx=0.16, rely=0.958, anchor=N)
+send_to_email_button = customtkinter.CTkButton(master=window.frame, text="Send to Email", width=110, command=send_to_email)
+send_to_email_button.place(relx=0.84, rely=0.958, anchor=N)
 
 # Label
-# label = customtkinter.CTkLabel(master=window.frame, width=25, text="-or-")
-# label.place(relx=0.3, rely=0.9, anchor=CENTER)
+label = customtkinter.CTkLabel(master=window.frame, width=25, text="-or-")
+label.place(relx=0.3, rely=0.975, anchor=CENTER)
 
 window.mainloop()
