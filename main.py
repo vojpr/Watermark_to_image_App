@@ -249,7 +249,7 @@ send_to_email_button = customtkinter.CTkButton(master=window.frame, text="Send t
 send_to_email_button.place(relx=0.84, rely=0.958, anchor=N)
 
 # Label
-label = customtkinter.CTkLabel(master=window.frame, width=25, text="-or-")
+label = customtkinter.CTkLabel(master=window.frame, width=25, text="or")
 label.place(relx=0.3, rely=0.975, anchor=CENTER)
 
 window.mainloop()
