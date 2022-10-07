@@ -198,8 +198,8 @@ customtkinter.set_default_color_theme("green")
 
 window = customtkinter.CTk()
 window.title("Watermark App")
-window.geometry("640x820")
-window.minsize(width=580, height=580)
+window.geometry("640x785")
+window.minsize(width=620, height=785)
 window.config(padx=40, pady=40)
 
 # Frame
