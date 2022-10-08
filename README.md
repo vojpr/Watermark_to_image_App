@@ -1,5 +1,6 @@
 # Watermark to image App
 App lets user upload image (jpg) from file browser and write custom watermark over it using Pillow.<br>
+The final image can then be downloaded or sent to email.<br>
 GUI built with Tkinter and CustomTkinter.
 
-<img width="641" alt="screenshot" src="https://user-images.githubusercontent.com/102183484/179029805-efaf89ce-86a0-4b7e-82fe-73bcdafa2f8f.png">
+<img width="670" alt="mona" src="https://user-images.githubusercontent.com/102183484/194711051-b2679b46-1811-44a1-ab27-298d83d8acaa.png">
