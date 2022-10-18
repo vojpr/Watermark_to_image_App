@@ -10,6 +10,7 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 import tempfile
 from dotenv import load_dotenv
+from downloads_folder_finder import get_download_folder
 
 load_dotenv()
 
@@ -17,55 +18,6 @@ load_dotenv()
 SENDER_EMAIL = os.getenv('SENDER_EMAIL')
 PASSWORD = os.getenv('PASSWORD')
 SMTP_SERVER = "smtp.gmail.com"
-
-# Returns Downloads folder depending on operational system
-if os.name == 'nt':
-    import ctypes
-    from ctypes import windll, wintypes
-    from uuid import UUID
-
-    # ctypes GUID copied from MSDN sample code
-    class GUID(ctypes.Structure):
-        _fields_ = [
-            ("Data1", wintypes.DWORD),
-            ("Data2", wintypes.WORD),
-            ("Data3", wintypes.WORD),
-            ("Data4", wintypes.BYTE * 8)
-        ]
-
-        def __init__(self, uuidstr):
-            uuid = UUID(uuidstr)
-            ctypes.Structure.__init__(self)
-            self.Data1, self.Data2, self.Data3, \
-            self.Data4[0], self.Data4[1], rest = uuid.fields
-            for i in range(2, 8):
-                self.Data4[i] = rest >> (8 - i - 1) * 8 & 0xff
-
-
-    SHGetKnownFolderPath = windll.shell32.SHGetKnownFolderPath
-    SHGetKnownFolderPath.argtypes = [
-        ctypes.POINTER(GUID), wintypes.DWORD,
-        wintypes.HANDLE, ctypes.POINTER(ctypes.c_wchar_p)
-    ]
-
-
-    def _get_known_folder_path(uuidstr):
-        pathptr = ctypes.c_wchar_p()
-        guid = GUID(uuidstr)
-        if SHGetKnownFolderPath(ctypes.byref(guid), 0, 0, ctypes.byref(pathptr)):
-            raise ctypes.WinError()
-        return pathptr.value
-
-
-    FOLDERID_Download = '{374DE290-123F-4565-9164-39C4925E467B}'
-
-
-    def get_download_folder():
-        return _get_known_folder_path(FOLDERID_Download)
-else:
-    def get_download_folder():
-        home = os.path.expanduser("~")
-        return os.path.join(home, "Downloads")
 
 
 def select_color():
@@ -76,6 +28,7 @@ def select_color():
 
 
 def select_file():
+    """Opens filedialog, uploads selected JPEG or PNG file and displays it on canvas"""
     global resized_image, new_width, new_height, filename
     # Load image
     filetypes = (("image files", ('.jpg', '.jpeg', '.png')), ("all files", "*.*"))
@@ -105,6 +58,7 @@ def select_file():
 
 
 def add_text():
+    """Shows provided text on the canvas image"""
     global watermark_image, new_width, new_height, image
     # Get text, set font, open image
     text = entry.get()
@@ -130,7 +84,7 @@ def add_text():
 
 
 def save():
-    # Save the image with watermark in original size
+    """Saves the image with watermark to downloads folder"""
     try:
         # Timestamp for creating unique name
         image.save(fp=f'{get_download_folder()}/watermark_image_{time.time()}.{image.format}')
@@ -148,6 +102,7 @@ def save():
 
 
 def send_to_email():
+    """Sends the image with watermark to provided email address"""
     # Create a multipart message and set headers
     msg = MIMEMultipart()
     msg["Subject"] = "New Image from Watermark App!"
