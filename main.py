@@ -33,7 +33,7 @@ canvas.place(relx=0.5, rely=0, anchor=N)
 # Entry
 entry = customtkinter.CTkEntry(master=window.frame, width=480)
 entry.bind("<Button-1>", lambda e: entry.delete(0, END))
-entry.insert(END, string="Type here your © copyright or other text to use as a watermark ")
+entry.insert(END, string="Type here your © copyright or other text to use as a watermark")
 entry.place(relx=0.5, rely=0.735, anchor=N)
 email_entry = customtkinter.CTkEntry(master=window.frame, width=208)
 email_entry.bind("<Button-1>", lambda e: email_entry.delete(0, END))
